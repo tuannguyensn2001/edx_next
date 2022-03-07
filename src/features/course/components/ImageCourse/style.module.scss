@@ -1,0 +1,13 @@
+.image {
+  & > .loading {
+    position: relative;
+    left: 170px;
+    top: -150px;
+  }
+
+  & > .loading_img {
+    filter: brightness(30%);
+  }
+
+  @apply tw-rounded
+}
