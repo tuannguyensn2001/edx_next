@@ -6,4 +6,5 @@ export declare interface ICourse {
     price: number | null;
     status: 'ACTIVE' | 'INACTIVE';
     imageUrl: string;
+    _id: string;
 }

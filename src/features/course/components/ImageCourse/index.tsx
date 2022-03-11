@@ -44,7 +44,7 @@ function ImageCourse() {
     });
 
     return (
-        <div {...getRootProps()}>
+        <div {...getRootProps()} className={'hover:tw-cursor-pointer'}>
             <input {...getInputProps()} />
             <Controller
                 control={context?.control}

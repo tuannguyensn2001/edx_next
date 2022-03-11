@@ -4,14 +4,16 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Link from 'next/link';
 
 interface Prop {
     imageUrl: string;
     name: string;
     description: string;
+    id: string;
 }
 
-function CardCourse({ imageUrl, name, description }: Prop) {
+function CardCourse({ imageUrl, name, description, id }: Prop) {
     return (
         <Card>
             <CardMedia
@@ -29,8 +31,12 @@ function CardCourse({ imageUrl, name, description }: Prop) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size='small'>Share</Button>
-                <Button size='small'>Learn More</Button>
+                <Link href={`/profile/courses/${id}/edit`}>
+                    <Button size='small' variant={'contained'}>
+                        Xem chi tiết
+                    </Button>
+                </Link>
+                <Button size='small'>Xóa</Button>
             </CardActions>
         </Card>
     );

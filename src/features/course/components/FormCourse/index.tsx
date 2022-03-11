@@ -11,7 +11,11 @@ import ImageCourse from 'features/course/components/ImageCourse';
 import { Controller } from 'react-hook-form';
 import useFormCourseContext from 'features/course/context/useFormCourseContext';
 
-function FormCourse() {
+interface Prop {
+    status: string;
+}
+
+function FormCourse({ status }: Prop) {
     const context = useFormCourseContext();
 
     return (
@@ -89,7 +93,7 @@ function FormCourse() {
             </div>
             <div>
                 <Button variant={'contained'} type={'submit'}>
-                    Tạo mới
+                    {status || 'Tạo mới'}
                 </Button>
             </div>
         </div>
