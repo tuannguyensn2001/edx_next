@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import { getCurrentUserThunk } from 'features/auth/slices/thunk';
+import { ConfirmProvider } from 'material-ui-confirm';
 
 const queryClient = new QueryClient();
 
@@ -29,7 +30,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                     draggable
                     pauseOnHover
                 />
-                <Component {...pageProps} />
+                <ConfirmProvider>
+                    <Component {...pageProps} />
+                </ConfirmProvider>
             </Provider>
         </QueryClientProvider>
     );

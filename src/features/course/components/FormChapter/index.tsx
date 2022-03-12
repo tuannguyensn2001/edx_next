@@ -3,7 +3,7 @@ import {
     SortableElement,
     SortEnd,
 } from 'react-sortable-hoc';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { IChapter } from 'models/IChapter';
 import { arrayMoveImmutable } from 'array-move';
 import Accordion from '@mui/material/Accordion';
@@ -20,11 +20,29 @@ import { useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import ModalChapter from 'features/course/components/ModalChapter';
 import { FormChapterType } from 'features/course/types';
+import useGetChapters from 'features/course/hooks/useGetChapters';
+import useCreateChapters from 'features/course/hooks/useCreateChapters';
+import { useRouter } from 'next/router';
+import useUpdateChapter from 'features/course/hooks/useUpdateChapter';
 
 const SortableItem = memo(
-    SortableElement(({ value }: { value: IChapter }) => (
-        <Chapter name={value.name} order={value.order} key={value._id} />
-    ))
+    SortableElement(
+        ({
+            value,
+            disabled,
+            handleClickEdit,
+        }: {
+            value: IChapter;
+            disabled: boolean;
+            handleClickEdit: (chapter: IChapter) => void;
+        }) => (
+            <Chapter
+                handleClickEdit={handleClickEdit}
+                key={value._id}
+                {...value}
+            />
+        )
+    )
 );
 
 const SortableContainerFake = memo(
@@ -34,32 +52,69 @@ const SortableContainerFake = memo(
 );
 
 function FormChapter() {
-    const { register, watch, control } = useForm<FormChapterType>({
+    const {
+        register,
+        watch,
+        control,
+        setError,
+        resetField,
+        handleSubmit,
+        setValue,
+    } = useForm<FormChapterType>({
         defaultValues: {
             sortable: false,
             currentChapter: {
                 name: '',
+                id: undefined,
             },
         },
     });
 
-    const [chapters, setChapters] = useState<IChapter[]>([
-        {
-            _id: '1',
-            name: 'Chapter 1',
-            order: 1,
+    const mode = useMemo<'create' | 'edit'>(() => {
+        return !!watch('currentChapter._id') ? 'edit' : 'create';
+    }, [watch('currentChapter._id')]);
+
+    const { query } = useRouter();
+
+    const { chapters, setChapters } = useGetChapters();
+
+    const { mutate } = useCreateChapters({
+        onSuccess(chapter) {
+            setChapters((prevState) => [...prevState, chapter]);
+            setIsOpen(false);
+            resetField('currentChapter', {
+                keepError: false,
+            });
         },
-        {
-            _id: '2',
-            name: 'Chapter 2',
-            order: 2,
+        onError(error) {
+            setError('currentChapter.name', {
+                message: error.response?.data.message,
+            });
         },
-        {
-            _id: '3',
-            name: 'Chapter 3',
-            order: 3,
+    });
+
+    const { mutate: mutateUpdate } = useUpdateChapter({
+        onSuccess(chapter) {
+            setChapters((prevState) => {
+                const clone = [...prevState];
+
+                const index = clone.findIndex(
+                    (item) => item._id === chapter._id
+                );
+
+                clone[index] = {
+                    ...clone[index],
+                    name: chapter.name,
+                };
+
+                return clone;
+            });
+            resetField('currentChapter', {
+                keepError: false,
+            });
+            setIsOpen(false);
         },
-    ]);
+    });
 
     const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
         setChapters(arrayMoveImmutable(chapters, oldIndex - 1, newIndex - 1));
@@ -71,25 +126,50 @@ function FormChapter() {
         setIsOpen(true);
     };
 
+    const submit = (data: FormChapterType) => {
+        if (!query.id) return;
+
+        if (mode === 'create') {
+            const currentChapter = data.currentChapter;
+            mutate({
+                name: currentChapter.name,
+                courseId: query.id.toString(),
+            });
+        } else if (mode === 'edit') {
+            if (!data.currentChapter._id) return;
+            mutateUpdate({
+                id: data.currentChapter._id,
+                data: {
+                    name: data.currentChapter.name,
+                },
+            });
+        }
+    };
+
+    const handleSubmitModal = () => {
+        handleSubmit(submit)();
+    };
+
     const handleClose = () => {
         setIsOpen(false);
-        setChapters((prevState) => [
-            ...prevState,
-            {
-                _id: `${prevState.length + 1}`,
-                name: watch('currentChapter.name'),
-                order: prevState.length + 1,
-            },
-        ]);
+        resetField('currentChapter');
+    };
+
+    const handleOpenEditChapter = (chapter: IChapter) => {
+        setIsOpen(true);
+        console.log(chapter);
+        setValue('currentChapter', chapter);
     };
 
     return (
         <div>
             <ModalChapter
+                mode={mode}
                 control={control}
                 isOpen={isOpen}
                 handleClickOpen={handleClickOpen}
                 handleClose={handleClose}
+                handleSubmit={handleSubmitModal}
             />
             <div>
                 <Button variant={'contained'} onClick={handleClickOpen}>
@@ -121,6 +201,7 @@ function FormChapter() {
                 >
                     {chapters.map((item) => (
                         <SortableItem
+                            handleClickEdit={handleOpenEditChapter}
                             disabled={!watch('sortable')}
                             key={item._id}
                             value={item}

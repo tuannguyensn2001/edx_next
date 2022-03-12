@@ -17,6 +17,7 @@ function MyCourses() {
                     {courses?.map((course) => (
                         <div key={course.id}>
                             <CardCourse
+                                key={course._id}
                                 id={course._id}
                                 name={course.name}
                                 imageUrl={course.imageUrl}

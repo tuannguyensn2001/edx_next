@@ -19,9 +19,18 @@ interface Prop {
     handleClickOpen: () => void;
     handleClose: () => void;
     control: Control<FormChapterType>;
+    handleSubmit: () => void;
+    mode: 'create' | 'edit';
 }
 
-function ModalChapter({ isOpen, handleClickOpen, handleClose, control }: Prop) {
+function ModalChapter({
+    isOpen,
+    handleClickOpen,
+    handleClose,
+    control,
+    handleSubmit,
+    mode,
+}: Prop) {
     return (
         <div>
             <Dialog
@@ -30,16 +39,24 @@ function ModalChapter({ isOpen, handleClickOpen, handleClose, control }: Prop) {
                 open={isOpen}
                 onClose={handleClose}
             >
-                <DialogTitle>Thêm mới chương học</DialogTitle>
+                <DialogTitle>
+                    {mode === 'create'
+                        ? 'Thêm mới chương học'
+                        : 'Sửa chương học'}
+                </DialogTitle>
                 <DialogContent>
                     {/*<DialogContentText>*/}
                     {/*    Thêm mới chương học vào trong khóa học này*/}
                     {/*</DialogContentText>*/}
                     <Controller
+                        rules={{
+                            required: 'Tên chương học không được để trống',
+                        }}
                         control={control}
                         name={'currentChapter.name'}
-                        render={({ field }) => (
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <TextField
+                                error={invalid}
                                 autoFocus
                                 margin='dense'
                                 id='name'
@@ -47,6 +64,7 @@ function ModalChapter({ isOpen, handleClickOpen, handleClose, control }: Prop) {
                                 type='email'
                                 fullWidth
                                 variant='standard'
+                                helperText={error?.message}
                                 {...field}
                             />
                         )}
@@ -54,7 +72,9 @@ function ModalChapter({ isOpen, handleClickOpen, handleClose, control }: Prop) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Hủy</Button>
-                    <Button onClick={handleClose}>Thêm mới</Button>
+                    <Button variant={'contained'} onClick={handleSubmit}>
+                        {mode === 'create' ? 'Thêm mới' : 'Cập nhật'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>

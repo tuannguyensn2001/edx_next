@@ -4,3 +4,5 @@ export declare interface IChapter {
     name: string;
     order: number;
 }
+
+export type UpdateChapterDTO = Pick<IChapter, 'name'>;
