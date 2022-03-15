@@ -9,7 +9,13 @@ import { useEffect } from 'react';
 import { getCurrentUserThunk } from 'features/auth/slices/thunk';
 import { ConfirmProvider } from 'material-ui-confirm';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: 3,
+        },
+    },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
     useEffect(() => {

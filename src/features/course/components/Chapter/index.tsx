@@ -11,9 +11,17 @@ import { useConfirm } from 'material-ui-confirm';
 
 interface Prop extends IChapter {
     handleClickEdit: (chapter: IChapter) => void;
+    handleDelete: (id: string) => void;
 }
 
-function Chapter({ name, handleClickEdit, _id, id, order }: Prop) {
+function Chapter({
+    name,
+    handleClickEdit,
+    _id,
+    id,
+    order,
+    handleDelete,
+}: Prop) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const confirm = useConfirm();
@@ -33,6 +41,9 @@ function Chapter({ name, handleClickEdit, _id, id, order }: Prop) {
             confirmationButtonProps: {
                 variant: 'contained',
             },
+        }).then((r) => {
+            if (!id) return;
+            handleDelete(id);
         });
     };
 

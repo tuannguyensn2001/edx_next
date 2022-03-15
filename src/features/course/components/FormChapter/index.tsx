@@ -24,6 +24,11 @@ import useGetChapters from 'features/course/hooks/useGetChapters';
 import useCreateChapters from 'features/course/hooks/useCreateChapters';
 import { useRouter } from 'next/router';
 import useUpdateChapter from 'features/course/hooks/useUpdateChapter';
+import { useMutation } from 'react-query';
+import { AxiosError, AxiosResponse } from 'axios';
+import { MyResponse } from '../../../../types/ResponseAPI';
+import { fetchDeleteChapter } from '../../../../services/chapter';
+import { toast } from 'react-toastify';
 
 const SortableItem = memo(
     SortableElement(
@@ -31,15 +36,19 @@ const SortableItem = memo(
             value,
             disabled,
             handleClickEdit,
+            handleDelete,
         }: {
             value: IChapter;
             disabled: boolean;
             handleClickEdit: (chapter: IChapter) => void;
+            handleDelete: (id: string) => void;
         }) => (
             <Chapter
                 handleClickEdit={handleClickEdit}
-                key={value._id}
+                handleDelete={handleDelete}
+                key={value.id}
                 {...value}
+                id={value.id}
             />
         )
     )
@@ -71,8 +80,8 @@ function FormChapter() {
     });
 
     const mode = useMemo<'create' | 'edit'>(() => {
-        return !!watch('currentChapter._id') ? 'edit' : 'create';
-    }, [watch('currentChapter._id')]);
+        return !!watch('currentChapter.id') ? 'edit' : 'create';
+    }, [watch('currentChapter.id')]);
 
     const { query } = useRouter();
 
@@ -98,9 +107,7 @@ function FormChapter() {
             setChapters((prevState) => {
                 const clone = [...prevState];
 
-                const index = clone.findIndex(
-                    (item) => item._id === chapter._id
-                );
+                const index = clone.findIndex((item) => item.id === chapter.id);
 
                 clone[index] = {
                     ...clone[index],
@@ -113,6 +120,25 @@ function FormChapter() {
                 keepError: false,
             });
             setIsOpen(false);
+        },
+    });
+
+    const { mutate: mutateDelete } = useMutation<
+        AxiosResponse<MyResponse<number>>,
+        AxiosError<MyResponse>,
+        string
+    >('delete', (id) => fetchDeleteChapter(id), {
+        onSuccess(response) {
+            const id = response.data.data;
+
+            setChapters((prevState) =>
+                prevState.filter((item) => Number(item.id) !== id)
+            );
+
+            toast.success(response.data.message);
+        },
+        onError(error) {
+            toast.error(error?.response?.data?.message);
         },
     });
 
@@ -136,9 +162,9 @@ function FormChapter() {
                 courseId: query.id.toString(),
             });
         } else if (mode === 'edit') {
-            if (!data.currentChapter._id) return;
+            if (!data.currentChapter.id) return;
             mutateUpdate({
-                id: data.currentChapter._id,
+                id: data.currentChapter.id,
                 data: {
                     name: data.currentChapter.name,
                 },
@@ -157,8 +183,11 @@ function FormChapter() {
 
     const handleOpenEditChapter = (chapter: IChapter) => {
         setIsOpen(true);
-        console.log(chapter);
         setValue('currentChapter', chapter);
+    };
+
+    const handleDeleteChapter = (id: string) => {
+        mutateDelete(id);
     };
 
     return (
@@ -202,8 +231,9 @@ function FormChapter() {
                     {chapters.map((item) => (
                         <SortableItem
                             handleClickEdit={handleOpenEditChapter}
+                            handleDelete={handleDeleteChapter}
                             disabled={!watch('sortable')}
-                            key={item._id}
+                            key={item.id}
                             value={item}
                             index={item.order}
                         />
