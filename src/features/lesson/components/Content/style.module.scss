@@ -1,4 +1,12 @@
 .wrapper {
-  height: calc(100vh - 60px);
-  overflow-y: scroll;
+  height: calc(100vh - 60px - 4rem);
+  overflow-y: auto;
+}
+
+.video_wrapper {
+  @apply tw-h-5/6 tw-bg-black tw-px-16;
+
+  & > div {
+    height: 100% !important;
+  }
 }

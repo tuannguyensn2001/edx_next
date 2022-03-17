@@ -11,6 +11,10 @@ const CustomDetail = styled(AccordionDetails)(({ theme }) => ({
     padding: theme.spacing(0),
 }));
 
+const CustomSummary = styled(AccordionSummary)(({ theme }) => ({
+    backgroundColor: '#e5e5e5',
+}));
+
 function Chapter() {
     const [isOpen, setIsOpen] = useState<boolean>(true);
 
@@ -21,13 +25,13 @@ function Chapter() {
     return (
         <div>
             <Accordion expanded={isOpen} onChange={onChange}>
-                <AccordionSummary
+                <CustomSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1a-content'
                     id='panel1a-header'
                 >
                     <Typography>Accordion 1</Typography>
-                </AccordionSummary>
+                </CustomSummary>
                 <CustomDetail>
                     <LessonItem />
                     <LessonItem />
