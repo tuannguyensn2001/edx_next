@@ -8,6 +8,10 @@ import { useState } from 'react';
 import Button from '@mui/material/Button';
 import { memo } from 'react';
 import { useConfirm } from 'material-ui-confirm';
+import ModalLesson from 'features/course/components/ModalLesson';
+import useManageModalLesson from 'features/course/hooks/useManageModalLesson';
+import { ILesson } from 'models/ILesson';
+import useGetLessonsByChapter from 'features/course/hooks/useGetLessonsByChapter';
 
 interface Prop extends IChapter {
     handleClickEdit: (chapter: IChapter) => void;
@@ -23,6 +27,8 @@ function Chapter({
     handleDelete,
 }: Prop) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    const { lessons, addLesson } = useGetLessonsByChapter(Number(id));
 
     const confirm = useConfirm();
 
@@ -47,8 +53,27 @@ function Chapter({
         });
     };
 
+    const {
+        isOpen: isOpenModal,
+        handleClose,
+        handleOpen,
+        mode,
+        handleSubmitModal,
+        control,
+    } = useManageModalLesson(Number(id), {
+        handleCreateLessonSuccess: addLesson,
+    });
+
     return (
         <>
+            <ModalLesson
+                control={control}
+                isOpen={isOpenModal}
+                handleClickOpen={handleOpen}
+                handleClose={handleClose}
+                handleSubmit={handleSubmitModal}
+                mode={mode}
+            />
             <Accordion expanded={isOpen} onChange={onChange}>
                 <AccordionSummary
                     aria-controls='panel1a-content'
@@ -66,6 +91,15 @@ function Chapter({
                             <Button onClick={clickDelete} variant={'outlined'}>
                                 Xóa
                             </Button>
+                            <Button onClick={handleOpen} variant={'contained'}>
+                                Thêm mới bài học
+                            </Button>
+                        </div>
+
+                        <div>
+                            {lessons?.map((item) => (
+                                <div>{item.name}</div>
+                            ))}
                         </div>
                     </div>
                 </AccordionDetails>
