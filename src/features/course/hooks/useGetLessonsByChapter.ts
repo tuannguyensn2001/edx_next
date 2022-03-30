@@ -9,7 +9,7 @@ export default function useGetLessonsByChapter(chapterId: number) {
     const [lessons, setLessons] = useState<ILesson[]>([]);
 
     useQuery<ILesson[] | undefined, AxiosError<MyResponse>>(
-        'lessons',
+        ['lessons', chapterId],
         () => getLessonsByChapterId(chapterId),
         {
             onSuccess(data) {

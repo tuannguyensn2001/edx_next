@@ -70,5 +70,6 @@ export default function useManageModalLesson(
         mode,
         handleSubmitModal,
         control,
+        reset,
     };
 }

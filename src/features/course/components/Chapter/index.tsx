@@ -12,6 +12,7 @@ import ModalLesson from 'features/course/components/ModalLesson';
 import useManageModalLesson from 'features/course/hooks/useManageModalLesson';
 import { ILesson } from 'models/ILesson';
 import useGetLessonsByChapter from 'features/course/hooks/useGetLessonsByChapter';
+import Lesson from 'features/course/components/Lesson';
 
 interface Prop extends IChapter {
     handleClickEdit: (chapter: IChapter) => void;
@@ -60,9 +61,18 @@ function Chapter({
         mode,
         handleSubmitModal,
         control,
+        reset,
     } = useManageModalLesson(Number(id), {
         handleCreateLessonSuccess: addLesson,
     });
+
+    const handleClickEditLesson = (id: number) => {
+        const lesson = lessons.find((item) => item.id === id);
+        reset({
+            ...lesson,
+        });
+        handleOpen();
+    };
 
     return (
         <>
@@ -98,7 +108,12 @@ function Chapter({
 
                         <div>
                             {lessons?.map((item) => (
-                                <div>{item.name}</div>
+                                <Lesson
+                                    id={item.id}
+                                    name={item.name}
+                                    key={item.id}
+                                    onClickEdit={handleClickEditLesson}
+                                />
                             ))}
                         </div>
                     </div>
