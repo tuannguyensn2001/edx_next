@@ -4,16 +4,20 @@ import { FormLesson, ILesson, LessonCreate } from 'models/ILesson';
 import { useMutation } from 'react-query';
 import { MyResponse } from 'types/ResponseAPI';
 import { AxiosError } from 'axios';
-import { getCreateLesson } from 'repositories/lesson';
+import { getCreateLesson, getUpdateLesson } from 'repositories/lesson';
 import { toast } from 'react-toastify';
 
 type PropCallback = {
     handleCreateLessonSuccess: (lesson: ILesson) => void;
+    handleEditLessonSuccess: (
+        id: number,
+        data: Pick<ILesson, 'name' | 'videoURL'>
+    ) => void;
 };
 
 export default function useManageModalLesson(
     chapterId: number,
-    { handleCreateLessonSuccess }: PropCallback
+    { handleCreateLessonSuccess, handleEditLessonSuccess }: PropCallback
 ) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -23,7 +27,11 @@ export default function useManageModalLesson(
 
     const handleClose = () => {
         setIsOpen(false);
-        reset();
+        reset({
+            id: undefined,
+            name: '',
+            videoURL: '',
+        });
     };
 
     const { mutate } = useMutation<
@@ -34,13 +42,38 @@ export default function useManageModalLesson(
         onSuccess(response) {
             if (!response.data) return;
             toast.success(response.message);
-            handleClose();
             handleCreateLessonSuccess(response.data);
+            handleClose();
         },
         onError(err) {
             toast.error(err.response?.data.message);
         },
     });
+
+    const { mutate: mutateUpdate } = useMutation<
+        MyResponse<Pick<ILesson, 'name' | 'id' | 'videoURL'>>,
+        AxiosError<MyResponse>,
+        Pick<ILesson, 'id' | 'name' | 'videoURL'>
+    >(
+        'update',
+        async (lesson) => {
+            return await getUpdateLesson(lesson.id, {
+                name: lesson.name,
+                videoURL: lesson.videoURL,
+            });
+        },
+        {
+            onSuccess(response) {
+                toast.success(response.message);
+                if (!response.data?.id) return;
+                handleEditLessonSuccess(response.data?.id, {
+                    name: response.data?.name,
+                    videoURL: response.data?.videoURL,
+                });
+                handleClose();
+            },
+        }
+    );
 
     const { control, handleSubmit, watch, reset } = useForm<FormLesson>({
         defaultValues: {
@@ -56,10 +89,14 @@ export default function useManageModalLesson(
 
     const handleSubmitModal = () => {
         handleSubmit((data: FormLesson) => {
-            mutate({
-                ...data,
-                chapterId,
-            });
+            if (mode === 'create') {
+                mutate({
+                    ...data,
+                    chapterId,
+                });
+            } else if (mode === 'edit') {
+                mutateUpdate(data);
+            }
         })();
     };
 

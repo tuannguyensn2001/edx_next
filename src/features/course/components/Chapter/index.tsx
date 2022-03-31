@@ -29,7 +29,9 @@ function Chapter({
 }: Prop) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const { lessons, addLesson } = useGetLessonsByChapter(Number(id));
+    const { lessons, addLesson, editLesson } = useGetLessonsByChapter(
+        Number(id)
+    );
 
     const confirm = useConfirm();
 
@@ -64,6 +66,7 @@ function Chapter({
         reset,
     } = useManageModalLesson(Number(id), {
         handleCreateLessonSuccess: addLesson,
+        handleEditLessonSuccess: editLesson,
     });
 
     const handleClickEditLesson = (id: number) => {

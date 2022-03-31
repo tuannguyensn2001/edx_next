@@ -22,8 +22,24 @@ export default function useGetLessonsByChapter(chapterId: number) {
     const addLesson = (lesson: ILesson) =>
         setLessons((prevState) => [...prevState, lesson]);
 
+    const editLesson = (
+        id: number,
+        data: Pick<ILesson, 'name' | 'videoURL'>
+    ) => {
+        setLessons((prevState) => {
+            const clone = [...prevState];
+
+            const lesson = clone.find((item) => item.id === id);
+
+            Object.assign(lesson, data);
+
+            return clone;
+        });
+    };
+
     return {
         lessons,
         addLesson,
+        editLesson,
     };
 }

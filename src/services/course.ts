@@ -8,3 +8,7 @@ export const fetchCreateCourse = (data: ICourse) => {
 export const fetchMyCourses = () => {
     return MyAPI.get('/v1/courses');
 };
+
+export const fetchCourseByLesson = (lessonId: number) => {
+    return MyAPI.get(`/v1/courses/lesson/${lessonId}`);
+};

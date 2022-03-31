@@ -6,8 +6,34 @@ import Footer from 'features/lesson/components/Footer';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import clsx from 'clsx';
+import { useQuery } from 'react-query';
+import { MyResponse } from 'types/ResponseAPI';
+import { ICourse } from 'models/ICourse';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/router';
+import { getCourseByLessonId } from 'repositories/course';
 
 function Lesson() {
+    const {
+        query: { id },
+    } = useRouter();
+
+    const { data, isSuccess } = useQuery<
+        MyResponse<ICourse> | undefined,
+        AxiosError<MyResponse>
+    >(
+        ['course', id],
+        async () => {
+            if (!Number(id)) return undefined;
+            return getCourseByLessonId(Number(id));
+        },
+        {
+            onError(error) {
+                console.log('error', error);
+            },
+        }
+    );
+
     const isShowPlaylist = useSelector(
         (state: RootState) => state.lesson.isShowPlaylist
     );
@@ -28,7 +54,9 @@ function Lesson() {
                     </div>
                     {isShowPlaylist && (
                         <div className='tw-col-span-3'>
-                            <Playlist />
+                            {isSuccess && !!data?.data && (
+                                <Playlist course={data?.data} />
+                            )}
                         </div>
                     )}
                 </div>

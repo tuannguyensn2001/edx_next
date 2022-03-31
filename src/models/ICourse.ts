@@ -1,3 +1,5 @@
+import { IChapter } from 'models/IChapter';
+
 export declare interface ICourse {
     id: string;
     name: string;
@@ -7,4 +9,5 @@ export declare interface ICourse {
     status: 'ACTIVE' | 'INACTIVE';
     imageUrl: string;
     _id: string;
+    chapters?: IChapter[];
 }

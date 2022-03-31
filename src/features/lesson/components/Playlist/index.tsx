@@ -1,20 +1,17 @@
 import Chapter from 'features/lesson/components/Chapter';
 import styles from './style.module.scss';
+import { ICourse } from 'models/ICourse';
 
-function Playlist() {
+interface Prop {
+    course: ICourse;
+}
+
+function Playlist({ course }: Prop) {
     return (
         <div className={styles.wrapper}>
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
-            <Chapter />
+            {course?.chapters?.map((chapter) => (
+                <Chapter chapter={chapter} key={chapter.id} />
+            ))}
         </div>
     );
 }

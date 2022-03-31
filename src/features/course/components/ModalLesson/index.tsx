@@ -63,7 +63,6 @@ function ModalLesson({
                     render={({ field, fieldState: { invalid, error } }) => (
                         <TextField
                             error={invalid}
-                            autoFocus
                             margin='dense'
                             id='video_url'
                             label='Link video bài học'
