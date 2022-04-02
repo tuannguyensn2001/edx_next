@@ -44,7 +44,7 @@ function CreateCourse() {
                 <div className={'tw-mt-10'}>
                     <FormCourseContextProvider value={{ control, setValue }}>
                         <form onSubmit={handleSubmit(submit)}>
-                            <FormCourse />
+                            <FormCourse  status={''}/>
                         </form>
                     </FormCourseContextProvider>
                 </div>
