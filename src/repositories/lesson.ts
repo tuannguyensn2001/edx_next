@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 import { MyResponse } from 'types/ResponseAPI';
 import {
     fetchCreateLesson,
+    fetchLessonById,
     fetchLessonsByChapterId,
     fetchUpdateLesson,
 } from 'services/lesson';
@@ -26,5 +27,12 @@ export const getUpdateLesson = async (
     const response: AxiosResponse<
         MyResponse<Pick<ILesson, 'id' | 'name' | 'videoURL'>>
     > = await fetchUpdateLesson(lessonId, data);
+    return response.data;
+};
+
+export const getLessonById = async (id: number) => {
+    const response: AxiosResponse<MyResponse<ILesson>> = await fetchLessonById(
+        id
+    );
     return response.data;
 };

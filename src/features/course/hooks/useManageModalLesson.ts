@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormLesson, ILesson, LessonCreate } from 'models/ILesson';
 import { useMutation } from 'react-query';
@@ -27,6 +27,7 @@ export default function useManageModalLesson(
 
     const handleClose = () => {
         setIsOpen(false);
+
         reset({
             id: undefined,
             name: '',

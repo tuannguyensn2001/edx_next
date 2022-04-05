@@ -15,3 +15,13 @@ export const fetchUpdateLesson = (
 ) => {
     return MyAPI.put(`/v1/lessons/${lessonId}`, data);
 };
+
+export const fetchUpdateOrderLesson = (ids: number[]) => {
+    return MyAPI.put('/v1/lessons/order', {
+        ids,
+    });
+};
+
+export const fetchLessonById = (id: number) => {
+    return MyAPI.get(`/v1/lessons/${id}`);
+};
