@@ -11,9 +11,13 @@ function Lesson({ name, id, onClickEdit }: Prop) {
     };
 
     return (
-        <div className={'tw-flex'}>
+        <div className={'tw-flex tw-justify-between tw-my-4'}>
             <div>{name}</div>
-            <Button onClick={handleClickEdit} variant={'contained'}>
+            <Button
+                className={'tw-bg-green-900 hover:tw-bg-green-500'}
+                onClick={handleClickEdit}
+                variant={'contained'}
+            >
                 Sửa
             </Button>
         </div>

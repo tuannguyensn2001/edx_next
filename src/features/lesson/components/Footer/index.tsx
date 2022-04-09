@@ -11,8 +11,16 @@ import { RootState } from 'store';
 import { useMemo } from 'react';
 import { toggleShowPlaylist } from 'features/lesson/slices';
 import { Tooltip } from '@mui/material';
+import { ILesson } from 'models/ILesson';
+import Link from 'next/link';
 
-function Footer() {
+interface Prop {
+    lesson: ILesson;
+    next: number | null;
+    previous: number | null;
+}
+
+function Footer({ lesson, next, previous }: Prop) {
     const { isShowPlaylist, isEnded } = useSelector(
         (state: RootState) => state.lesson
     );
@@ -37,7 +45,14 @@ function Footer() {
                 <div></div>
                 <div className={'tw-flex'}>
                     <div>
-                        <Button startIcon={<ArrowBack />}>Bài trước</Button>
+                        <Link prefetch passHref href={`/lessons/${previous}`}>
+                            <Button
+                                disabled={previous === null}
+                                startIcon={<ArrowBack />}
+                            >
+                                Bài trước
+                            </Button>
+                        </Link>
                     </div>
                     <div className={'tw-ml-4'}>
                         <Tooltip
@@ -49,13 +64,19 @@ function Footer() {
                             arrow
                         >
                             <span>
-                                <Button
-                                    disabled={!isEnded}
-                                    variant={'contained'}
-                                    endIcon={<ArrowForward />}
+                                <Link
+                                    prefetch
+                                    passHref
+                                    href={`/lessons/${next}`}
                                 >
-                                    Bài kế tiếp
-                                </Button>
+                                    <Button
+                                        disabled={!isEnded || !next}
+                                        variant={'contained'}
+                                        endIcon={<ArrowForward />}
+                                    >
+                                        Bài kế tiếp
+                                    </Button>
+                                </Link>
                             </span>
                         </Tooltip>
                     </div>
@@ -66,7 +87,7 @@ function Footer() {
                         variant={'outlined'}
                         endIcon={icon}
                     >
-                        1. Học javascript
+                        {lesson.name}
                     </Button>
                 </div>
             </div>
