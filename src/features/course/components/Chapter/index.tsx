@@ -13,11 +13,22 @@ import useManageModalLesson from 'features/course/hooks/useManageModalLesson';
 import { ILesson } from 'models/ILesson';
 import useGetLessonsByChapter from 'features/course/hooks/useGetLessonsByChapter';
 import Lesson from 'features/course/components/Lesson';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 interface Prop extends IChapter {
     handleClickEdit: (chapter: IChapter) => void;
     handleDelete: (id: string) => void;
 }
+
+const SortableContainerFake = memo(
+    SortableContainer(({ children }: { children: any }) => {
+        return <div>{children}</div>;
+    })
+);
+
+const SortableItem = SortableElement(({ id, name, onClickEdit, key }: any) => (
+    <Lesson id={id} name={name} key={key} onClickEdit={onClickEdit} />
+));
 
 function Chapter({
     name,
@@ -29,9 +40,8 @@ function Chapter({
 }: Prop) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const { lessons, addLesson, editLesson } = useGetLessonsByChapter(
-        Number(id)
-    );
+    const { lessons, addLesson, editLesson, sortLesson } =
+        useGetLessonsByChapter(Number(id));
 
     const confirm = useConfirm();
 
@@ -109,16 +119,20 @@ function Chapter({
                             </Button>
                         </div>
 
-                        <div>
+                        <SortableContainerFake
+                            transitionDuration={500}
+                            onSortEnd={sortLesson}
+                        >
                             {lessons?.map((item) => (
-                                <Lesson
+                                <SortableItem
+                                    key={item.id}
                                     id={item.id}
                                     name={item.name}
-                                    key={item.id}
                                     onClickEdit={handleClickEditLesson}
+                                    index={item.order}
                                 />
                             ))}
-                        </div>
+                        </SortableContainerFake>
                     </div>
                 </AccordionDetails>
             </Accordion>

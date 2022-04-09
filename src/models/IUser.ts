@@ -6,6 +6,7 @@ export declare interface IUser {
 }
 
 export type LoginType = Pick<IUser, 'email' | 'password'>;
+export type SignupType = Pick<IUser, 'email' | 'password' | 'username'>;
 
 export type LoginResponse = {
     accessToken: string;

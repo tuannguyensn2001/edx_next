@@ -1,14 +1,24 @@
 import styles from './style.module.scss';
-import Youtube from 'react-youtube';
 import ReactPlayer from 'react-player';
 import { useDispatch } from 'react-redux';
 import { setEnded } from 'features/lesson/slices';
 import { Drawer } from '@mui/material';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
+import { useRouter } from 'next/router';
+import { ILesson } from 'models/ILesson';
 
-function Content() {
+interface Prop {
+    lesson: ILesson;
+    isSuccess: boolean;
+}
+
+function Content({ lesson, isSuccess }: Prop) {
     const [isOpenNote, setIsOpenNote] = useState<boolean>(false);
+
+    const {
+        query: { id },
+    } = useRouter();
 
     const dispatch = useDispatch();
 
@@ -34,14 +44,17 @@ function Content() {
             </Drawer>
             <div className={'tw-h-full'}>
                 <div className={styles.video_wrapper}>
-                    <ReactPlayer
-                        onStart={handleStart}
-                        onEnded={handleEnded}
-                        controls
-                        width={'100%'}
-                        height={'100%'}
-                        url={'https://www.youtube.com/watch?v=pPJ-PjsY7rc'}
-                    />
+                    {isSuccess && (
+                        <ReactPlayer
+                            onStart={handleStart}
+                            onEnded={handleEnded}
+                            controls
+                            width={'100%'}
+                            height={'100%'}
+                            // url={'https://www.youtube.com/watch?v=pPJ-PjsY7rc'}
+                            url={`https://www.youtube.com/watch?v=${lesson?.videoURL}`}
+                        />
+                    )}
                 </div>
                 <div>
                     <div onClick={() => setIsOpenNote(true)}>thêm ghi chú</div>

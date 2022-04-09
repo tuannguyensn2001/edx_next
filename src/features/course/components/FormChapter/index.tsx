@@ -3,16 +3,10 @@ import {
     SortableElement,
     SortEnd,
 } from 'react-sortable-hoc';
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { IChapter } from 'models/IChapter';
 import { arrayMoveImmutable } from 'array-move';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Chapter from 'features/course/components/Chapter';
-import { memo } from 'react';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -26,8 +20,8 @@ import { useRouter } from 'next/router';
 import useUpdateChapter from 'features/course/hooks/useUpdateChapter';
 import { useMutation } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
-import { MyResponse } from '../../../../types/ResponseAPI';
-import { fetchDeleteChapter } from '../../../../services/chapter';
+import { MyResponse } from 'types/ResponseAPI';
+import { fetchDeleteChapter } from 'services/chapter';
 import { toast } from 'react-toastify';
 
 const SortableItem = memo(
