@@ -1,18 +1,16 @@
-import { TextField } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { LoginResponse, LoginType, SignupType } from 'models/IUser';
-import { useMutation } from 'react-query';
-import { MyResponse } from 'types/ResponseAPI';
-import { AxiosError } from 'axios';
-import { getLogin } from 'repositories/auth';
-import { Alert } from '@mui/lab';
-import { useDispatch } from 'react-redux';
-import { setLoggedIn } from 'features/auth/slices';
-import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
-import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Alert } from '@mui/lab';
+import { TextField } from '@mui/material';
+import { AxiosError } from 'axios';
+import { LoginResponse, SignupType } from 'models/IUser';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
+import { toast } from 'react-toastify';
+import { getSignUp } from 'repositories/auth';
+import { MyResponse } from 'types/ResponseAPI';
+import * as Yup from 'yup';
 
 type FormSignup = SignupType & {
     confirmPassword?: string;
@@ -38,16 +36,14 @@ function Login() {
         resolver: yupResolver(schemaValidation),
     });
 
-    const dispatch = useDispatch();
-
     const router = useRouter();
 
     const signupMutation = useMutation<
         MyResponse<LoginResponse>,
         AxiosError<MyResponse>,
         SignupType
-    >('login', (data) => getLogin(data), {
-        async onSuccess(response) {
+    >('login', (data) => getSignUp(data), {
+        async onSuccess() {
             await router.push('/login');
             toast.success('Chúc mừng bạn đã đăng kí thành công');
         },
@@ -56,11 +52,7 @@ function Login() {
     const submit = (data: FormSignup) => {
         const newData = { ...data };
         delete newData['confirmPassword'];
-        console.log(
-            '🚀 ~ file: signup.tsx ~ line 59 ~ submit ~ newData',
-            newData
-        );
-        // signupMutation.mutate(newData);
+        signupMutation.mutate(newData);
     };
 
     return (
