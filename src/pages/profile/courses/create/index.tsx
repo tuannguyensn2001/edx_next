@@ -28,11 +28,15 @@ function CreateCourse() {
         MyResponse<ICourse>,
         AxiosError<MyResponse>,
         ICourse
-    >('create', (data) => getCreateCourse(data), {
-        onSuccess() {
-            toast.success('Tạo mới khóa học thành công');
-        },
-    });
+    >(
+        'create',
+        (data) => getCreateCourse({ ...data, price: Number(data.price) }),
+        {
+            onSuccess() {
+                toast.success('Tạo mới khóa học thành công');
+            },
+        }
+    );
 
     const submit = (data: ICourse) => {
         createCourseMutation.mutate(data);
