@@ -20,6 +20,7 @@ const schemaValidation = Yup.object({
     email: Yup.string()
         .email('Trường này phải là email')
         .required('Trường này không được bỏ trống'),
+    username: Yup.string().required('Trường này không được bỏ trống'),
     password: Yup.string()
         .required('Trường này không được bỏ trống')
         .matches(
