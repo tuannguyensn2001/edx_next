@@ -8,13 +8,15 @@ import { AxiosError } from 'axios';
 import { getLogin } from 'repositories/auth';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert } from '@mui/lab';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoggedIn } from 'features/auth/slices';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
+import { RootState } from 'store';
+import { cancelPrevent } from 'apps';
 
 type FormLogin = LoginType;
 
@@ -30,6 +32,10 @@ function Login() {
         resolver: yupResolver(schemaValidation),
     });
 
+    const { isPrevented, router: routePrevented } = useSelector(
+        (state: RootState) => state.app
+    );
+
     const dispatch = useDispatch();
 
     const router = useRouter();
@@ -40,8 +46,14 @@ function Login() {
         LoginType
     >('login', (data) => getLogin(data), {
         async onSuccess(response) {
+            console.log(response);
             if (!!response?.data) dispatch(setLoggedIn(response.data));
-            await router.push('/');
+            if (isPrevented) {
+                await router.push(routePrevented);
+            } else {
+                await router.push('/');
+            }
+            dispatch(cancelPrevent());
             toast.success('Chào mừng bạn trở lại');
         },
     });

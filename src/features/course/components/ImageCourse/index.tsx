@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from 'react-query';
 import { MyResponse } from 'types/ResponseAPI';

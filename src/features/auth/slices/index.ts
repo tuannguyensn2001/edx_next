@@ -11,6 +11,7 @@ const authSlice = createSlice({
     initialState: {
         user: null,
         isLoading: false,
+        isLoaded: false,
     },
     name: 'auth',
     reducers: {
@@ -19,6 +20,9 @@ const authSlice = createSlice({
             state.user = action.payload.user;
             localStorage.setItem('accessToken', action.payload.accessToken);
             localStorage.setItem('refreshToken', action.payload.refreshToken);
+        },
+        startLoading(state) {
+            state.isLoading = true;
         },
     },
     extraReducers: (builder) => {
@@ -31,15 +35,17 @@ const authSlice = createSlice({
                 // @ts-ignore
                 state.user = action.payload;
                 state.isLoading = false;
+                state.isLoaded = true;
             }
         );
         builder.addCase(getCurrentUserThunk.rejected, (state) => {
             state.isLoading = false;
+            state.isLoaded = true;
         });
     },
 });
 
-export const { setLoggedIn } = authSlice.actions;
+export const { setLoggedIn, startLoading } = authSlice.actions;
 
 const AuthReducer = authSlice.reducer;
 

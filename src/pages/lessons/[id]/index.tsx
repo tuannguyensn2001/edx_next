@@ -13,8 +13,15 @@ import { useRouter } from 'next/router';
 import { getCourseByLessonId } from 'repositories/course';
 import { ILesson } from 'models/ILesson';
 import { getLessonById } from 'repositories/lesson';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { IChapter } from 'models/IChapter';
+import { DOMAIN } from 'config/socket';
+import { useToggle } from 'react-use';
+import DrawerComment from 'features/lesson/components/DrawerComment';
+import Button from '@mui/material/Button';
+import { dispatchMessage, getMessage } from 'services/socket';
+import { Channel } from 'socket/channel';
+import WithAuth from 'components/auth/WithAuth';
 
 function Lesson() {
     const {
@@ -74,9 +81,67 @@ function Lesson() {
         (state: RootState) => state.lesson.isShowPlaylist
     );
 
+    const [isOpenDrawerComment, toggleDrawerComment] = useToggle(false);
+
+    const ws = useRef<WebSocket>();
+
+    const drawer = useRef();
+
+    useEffect(() => {
+        if (!id) return;
+        const tempws = new WebSocket(DOMAIN);
+
+        tempws.onopen = () => {
+            tempws.send(
+                dispatchMessage({
+                    isJoinRoom: true,
+                    roomId: `lesson-detail-${id}`,
+                })
+            );
+        };
+        tempws.onmessage = (payload) => {
+            const message = getMessage(payload.data);
+
+            if (message.channel === Channel.RECEIVE_COMMENT) {
+                if (!drawer.current) return;
+                // @ts-ignore
+                drawer.current.addComment(message.data);
+            }
+        };
+        ws.current = tempws;
+
+        window.onbeforeunload = () => {
+            tempws.send(
+                dispatchMessage({
+                    isLeaveRoom: true,
+                    roomId: `lesson-detail-${id}`,
+                })
+            );
+        };
+
+        return () => {
+            console.log('changed');
+            tempws.send(
+                dispatchMessage({
+                    isLeaveRoom: true,
+                    roomId: `lesson-detail-${id}`,
+                })
+            );
+        };
+    }, [id]);
+
     return (
         <div>
-            <div className={'tw-h-[60px] tw-bg-gray-700'}></div>
+            <DrawerComment
+                ref={drawer}
+                isOpen={isOpenDrawerComment}
+                onClose={() => toggleDrawerComment(false)}
+            />
+            <div className={'tw-h-[60px] tw-bg-gray-700'}>
+                <Button onClick={() => toggleDrawerComment(true)}>
+                    Bình luận
+                </Button>
+            </div>
 
             <div>
                 <div className={styles.wrapper}>
@@ -116,4 +181,4 @@ function Lesson() {
     );
 }
 
-export default Lesson;
+export default WithAuth<null>(Lesson);

@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { ICourse } from 'models/ICourse';
 import { getMyCourses } from 'repositories/course';
 import CardCourse from 'components/course/CardCourse';
+import WithAuth from 'components/auth/WithAuth';
 
 function MyCourses() {
     const { data: courses } = useQuery('courses', async () => {
@@ -31,4 +32,4 @@ function MyCourses() {
     );
 }
 
-export default MyCourses;
+export default WithAuth(MyCourses);

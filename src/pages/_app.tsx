@@ -8,6 +8,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import { getCurrentUserThunk } from 'features/auth/slices/thunk';
 import { ConfirmProvider } from 'material-ui-confirm';
+import dynamic from 'next/dynamic';
+import { startLoading } from 'features/auth/slices';
+
+// @ts-ignore
+const Loading = dynamic(() => import('react-fullscreen-loading'), {
+    ssr: false,
+});
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -38,6 +45,13 @@ function MyApp({ Component, pageProps }: AppProps) {
                     pauseOnHover
                 />
                 <ConfirmProvider>
+                    <Loading
+                        //@ts-ignore
+                        loading={store.getState().auth.isLoading}
+                        background='#0c4a6e'
+                        loaderColor='#3498db'
+                    />
+
                     <Component {...pageProps} />
                 </ConfirmProvider>
             </Provider>
