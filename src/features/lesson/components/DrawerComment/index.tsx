@@ -15,6 +15,7 @@ import { IComment } from 'models/IComment';
 import { AxiosError } from 'axios';
 import { getCreateComment } from 'repositories/comment';
 import styles from './style.module.scss';
+import CommentItem from './components/CommentItem';
 
 interface Prop {
     isOpen: boolean;
@@ -84,7 +85,7 @@ function DrawerComment({ isOpen, onClose }: Prop, ref: React.Ref<any>) {
                 </div>
                 <div>
                     {comments.map((item) => (
-                        <div key={item.id}>{item.content}</div>
+                        <CommentItem key={item.id} comment={item} />
                     ))}
                 </div>
             </div>
