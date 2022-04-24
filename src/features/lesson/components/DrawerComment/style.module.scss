@@ -1,3 +1,76 @@
-.wrapper{
-  width: 600px;
+.wrapper {
+    width: 800px;
+    padding: 20px;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.submitButton,
+.replyButton {
+    padding: 10px 20px;
+    color: white;
+    background-color: #f15121;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        opacity: 0.8;
+    }
+    &:disabled,
+    &[disabled] {
+        background-color: #cccccc;
+        color: #666666;
+    }
+}
+
+.replyButton {
+    border-radius: 20px;
+    padding: 10px 15px;
+}
+
+.cancelButton {
+    border-radius: 20px;
+    padding: 10px 15px;
+    color: #888;
+    border: none;
+    background-color: transparent;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        background: #ebebeb;
+    }
+    &:disabled,
+    &[disabled] {
+        background-color: #cccccc;
+        color: #666666;
+    }
+}
+
+.reactionBox {
+    position: relative;
+}
+
+.reactionSelector {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    left: -10px;
+    top: -20px;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.reactionBox:hover .reactionSelector {
+    display: block;
+    transform: translateY(-28px);
+    opacity: 1;
+    visibility: visible;
 }
