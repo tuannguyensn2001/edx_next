@@ -62,7 +62,7 @@ function Lesson() {
 
         if (index === -1) return [null, null];
 
-        if (index === 0) return [null, lessons[index + 1].id];
+        if (index === 0) return [null, lessons[index + 1]?.id];
 
         if (index === lessons.length - 1) return [lessons[index - 1].id, null];
 
