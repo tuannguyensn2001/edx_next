@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player';
 import { useDispatch } from 'react-redux';
 import { setEnded } from 'features/lesson/slices';
 import { Drawer } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
 import { ILesson } from 'models/ILesson';
@@ -15,6 +15,21 @@ interface Prop {
 
 function Content({ lesson, isSuccess }: Prop) {
     const [isOpenNote, setIsOpenNote] = useState<boolean>(false);
+    const [played, setPlayed] = useState(0);
+    const prevPlayed = useRef<number | undefined>();
+    const playerRef = useRef<any>();
+    const [playing, setPlaying] = useState(false);
+
+    useEffect(() => {
+        prevPlayed.current = played;
+    }, [played]);
+
+    const alertInform = () => {
+        setPlaying(false);
+        alert('Vui lòng không tua quá nhanh');
+        playerRef.current.seekTo(prevPlayed.current);
+        return;
+    };
 
     const {
         query: { id },
@@ -30,8 +45,14 @@ function Content({ lesson, isSuccess }: Prop) {
         dispatch(setEnded(false));
     };
 
+    if (played > 1000) {
+        alertInform();
+    }
+
     return (
         <div className={styles.wrapper}>
+            {prevPlayed.current} <br />
+            {played}
             <Drawer
                 hideBackdrop
                 anchor={'bottom'}
@@ -46,18 +67,28 @@ function Content({ lesson, isSuccess }: Prop) {
                 <div className={styles.video_wrapper}>
                     {isSuccess && (
                         <ReactPlayer
+                            ref={playerRef}
+                            playing={playing}
                             onStart={handleStart}
                             onEnded={handleEnded}
+                            progressInterval={10000}
                             controls
                             width={'100%'}
                             height={'100%'}
+                            onSeek={(s) => console.log('seek', s)}
                             // url={'https://www.youtube.com/watch?v=pPJ-PjsY7rc'}
                             url={`https://www.youtube.com/watch?v=${lesson?.videoURL}`}
+                            onProgress={(progress) =>
+                                setPlayed(progress.playedSeconds)
+                            }
                         />
                     )}
                 </div>
                 <div>
                     <div onClick={() => setIsOpenNote(true)}>thêm ghi chú</div>
+                    <div onClick={() => setPlaying((prev) => !prev)}>
+                        Play/stop
+                    </div>
                 </div>
             </div>
         </div>
